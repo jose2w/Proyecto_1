@@ -1,0 +1,898 @@
+Configuraciond del switch S1_Sincelejo
+
+Switch(config)#hostname S1_Sincelejo
+S1_Sincelejo(config)#vlan 10
+S1_Sincelejo(config-vlan)#name Datos
+S1_Sincelejo(config-vlan)#exit
+S1_Sincelejo(config)#vlan 100
+S1_Sincelejo(config-vlan)#name Voz
+S1_Sincelejo(config-vlan)#exit
+S1-Sincelejo(config)#vlan 99
+S1-Sincelejo(config-vlan)#name Administracion
+
+S1_Sincelejo(config)#interface range f0/1-10
+S1_Sincelejo(config-if-range)#switchport mode access 
+S1_Sincelejo(config-if-range)#switchport access vlan 10
+S1_Sincelejo(config-if-range)#switchport voice vlan 100
+S1_Sincelejo(config)#interface range f0/11
+S1_Sincelejo(config-if-range)#switchport mode access 
+S1_Sincelejo(config-if-range)#switchport access vlan 10
+S1-Sincelejo(config)#int f0/12
+S1-Sincelejo(config-if)#description Conectado a Sincelejo
+S1-Sincelejo(config-if)#switchport mode trunk 
+S1-Sincelejo(config-if)#switchport trunk allowed vlan 10,100,99
+
+S1-Sincelejo(config)#interface r fastEthernet 0/13-24
+S1-Sincelejo(config-if-range)#switchport mode access 
+S1-Sincelejo(config-if-range)#switchport access vlan 99
+S1-Sincelejo(config-if-range)#shutdown 
+
+S1-Sincelejo(config)#interface r gigabitEthernet 0/1-2
+S1-Sincelejo(config-if-range)#switchport mode access 
+S1-Sincelejo(config-if-range)#switchport access vlan 99
+S1-Sincelejo(config-if-range)#shutdown 
+
+S1-Sincelejo(config)#int vlan 99
+S1-Sincelejo(config-if)#ip add 192.168.20.3 255.255.255.240
+S1-Sincelejo(config-if)#no shutdown 
+S1-Sincelejo(config)#ip default-gateway 192.168.10.1
+
+S1-Sincelejo(config)#line console 0
+S1-Sincelejo(config-line)#password cisco
+S1-Sincelejo(config-line)#login
+S1-Sincelejo(config-line)#exit
+S1-Sincelejo(config)#enable secret class
+S1-Sincelejo(config)#service password-encryption
+S1-Sincelejo(config)#no ip domain-name 
+S1-Sincelejo(config)#line vty 0 15
+S1-Sincelejo(config-line)#password cisco
+S1-Sincelejo(config-line)#login
+S1-Sincelejo(config-line)#exit
+S1-Sincelejo(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+
+S1-Sincelejo(config)#
+
+
+Configuracion del ROUTER SINCELEJO 
+
+Sincelejo(config)#int f0/0.10
+Sincelejo(config-subif)#description Conectado a S1-Sincelejo
+Sincelejo(config-subif)#encapsulation dot1Q 10
+Sincelejo(config-subif)#ip add 192.168.10.1 255.255.255.224
+Sincelejo(config-subif)#exit
+Sincelejo(config)#int f0/0.100
+Sincelejo(config-subif)#description Conectado a S1-Sincelejo
+Sincelejo(config-subif)#encapsulation dot1Q 100
+Sincelejo(config-subif)#ip add 172.16.10.1 255.255.255.224
+Sincelejo(config-subif)#exit
+Sincelejo(config)#int fastEthernet 0/0.99
+Sincelejo(config-subif)#description Conectado a S1-Sincelejo
+Sincelejo(config-subif)#encapsulation dot1Q 99
+Sincelejo(config-subif)#ip add 192.168.20.1 255.255.255.240
+Sincelejo(config-subif)#exit
+Router(config)#int f0/0
+Router(config-if)#no shutdown
+
+interface Serial0/3/0
+Sincelejo(config-if)#description Conectado a Cali
+ ip address 200.100.0.5 255.255.255.252
+
+interface Serial0/3/1
+description Conectado a Bogota
+ ip address 200.100.0.1 255.255.255.252
+
+
+Configuracion de DHCP SINCELEJO
+
+
+ip dhcp pool VOZ
+ network 172.16.10.0 255.255.255.224
+ default-router 172.16.10.1
+ option 150 ip 172.16.10.1
+
+ip dhcp excluded-address 172.16.10.1
+
+
+Configuracion VOZIP
+
+telephony-service
+ max-ephones 12
+ max-dn 12
+ ip source-address 172.16.10.1 port 2000
+ auto assign 1 to 12
+
+ephone-dn 1
+ number 2000
+
+ephone-dn 2
+ number 2001
+
+ephone-dn 3
+ number 2003
+
+ephone-dn 4
+ number 2004
+
+ephone-dn 5
+ number 2005
+
+ephone-dn 6
+ number 2006
+
+ephone-dn 7
+ number 2007
+
+ephone-dn 8
+ number 2008
+
+ephone-dn 9
+ number 2009
+
+
+ephone-dn 9
+ number 2010
+
+Configuracion del protocolo OSPF SINCELEJO
+
+router ospf 1
+ router-id 1.1.1.1
+ passive-interface FastEthernet0/0
+ network 192.168.10.0 0.0.0.31 area 0
+ network 172.16.10.0 0.0.0.31 area 0
+ network 200.100.0.0 0.0.0.3 area 0
+ network 200.100.0.4 0.0.0.3 area 0
+
+Configuracion de SSH S1_Sincelejo
+
+S1-Sincelejo(config)#ip domain-name cisco.com
+S1-Sincelejo(config)#crypto key generate rsa 
+The name for the keys will be: S1-Sincelejo.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+
+S1-Sincelejo(config)#ip ssh version 2
+S1-Sincelejo(config)#line vty 0 15
+S1-Sincelejo(config-line)#transport input ssh 
+S1-Sincelejo(config-line)#login local
+S1-Sincelejo(config)#username S1-Sincelejo secret cisco
+
+Sincelejo(config)#ip domain-name cisco.com
+Sincelejo(config)#cry
+Sincelejo(config)#crypto k
+Sincelejo(config)#crypto key g
+Sincelejo(config)#crypto key generate 
+Sincelejo(config)#crypto key generate rsa 
+The name for the keys will be: Sincelejo.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+Sincelejo(config)#ip ssh version 2
+Sincelejo(config)#line vty 0 15
+Sincelejo(config-line)#transport input ssh 
+Sincelejo(config-line)#login local
+Sincelejo(config-line)#exit
+Sincelejo(config)#username Sincelejo secret cisco
+
+Configuracion DIAL-PEER SINCELEJO
+
+dial-peer voice 2000 voip
+ destination-pattern 3...
+ session target ipv4:172.16.10.33
+
+dial-peer voice 2001 voip
+ destination-pattern 4...
+ session target ipv4:172.16.10.65
+
+dial-peer voice 2002 voip
+ destination-pattern 5...
+ session target ipv4:172.16.10.97
+
+line console 0
+password cisco
+login
+exit
+enable secret class
+service password-encryption
+no ip domain-lookup
+line vty 0 15
+password cisco
+login
+exit
+banner motd %
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+%
+
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Configuracion del ROUTER BOGOTA
+
+Bogota(config)#int f0/0
+Bogota(config-if)#description Conectado a DMZ
+Bogota(config-if)#ip add 192.168.10.129 255.255.255.248
+Bogota(config-if)#no shutdown
+Bogota(config)#int f0/0.99
+Bogota(config-if)#description Conectado a DMZ
+Bogota(config-if)#ip add 192.168.30.1 255.255.255.240
+Bogota(config-if)#no shutdown
+
+Bogota(config)#int f0/1.40
+Bogota(config-subif)#description Conectado a S2-Bogota
+Bogota(config-subif)#encapsulation dot1Q 40
+Bogota(config-subif)#ip add 192.168.10.33 255.255.255.224
+Bogota(config-subif)#ex
+Bogota(config)#int f0/1.100
+Bogota(config-subif)#description Conectado a S2-Bogota
+Bogota(config-subif)#encapsulation dot1Q 100
+Bogota(config-subif)#ip add 172.16.10.33 255.255.255.224
+Bogota(config-subif)#exit
+Bogota(config)#int f0/1.99
+Bogota(config-subif)#description Conectado a S2-Bogota
+Bogota(config-subif)#encapsulation dot1Q 99
+Bogota(config-subif)#ip add 192.168.40.1 255.255.255.240
+Bogota(config-subif)#ex
+
+interface Serial0/3/1
+ description Conectado a Sincelejo
+ ip address 200.100.0.2 255.255.255.252
+
+interface Serial0/3/0
+ description Conectado a Medellin
+ ip address 200.100.0.14 255.255.255.252
+
+line console 0
+password cisco
+login
+exit
+enable secret class
+service password-encryption
+no ip domain-lookup
+line vty 0 15
+password cisco
+login
+exit
+banner motd %
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+%
+
+
+
+Configuracion del switch DMZ
+
+DMZ(config)#interface FastEthernet0/5
+DMZ(config-if)#switchport trunk allowed vlan 1,99
+DMZ(config-if)#switchport mode trunk
+DMZ(config-if)#description Conectado a Bogota
+DMZ(config)#int r f0/6-24
+DMZ(config-if-range)#switchport mode access 
+DMZ(config-if-range)#switchport access vlan 99
+DMZ(config-if-range)#ex
+DMZ(config)#int r g0/1-2
+DMZ(config-if-range)#switchport mode access 
+DMZ(config-if-range)#switchport access vlan 99
+DMZ(config-if-range)#no shutdown
+
+DMZ(config)#int r f0/7-24
+DMZ(config-if-range)#no shutdown
+DMZ(config)#ip default-gateway 192.168.10.129
+
+Configuracion del switch S2-Bogota
+
+S2-Bogota(config)#vlan 40
+S2-Bogota(config-vlan)#name Datos
+S2-Bogota(config-vlan)#exit
+S2-Bogota(config)#vlan 100
+S2-Bogota(config-vlan)#name Voz
+S2-Bogota(config-vlan)#exit
+S2-Bogota(config)#vlan 99
+S2-Bogota(config-vlan)#name Administracion
+S2-Bogota(config-vlan)#exit
+
+S2-Bogota(config)#int r f0/1-10
+S2-Bogota(config-if-range)#switchport mode access 
+S2-Bogota(config-if-range)#switchport access vlan 40
+S2-Bogota(config-if-range)#switchport voice vlan 100
+S2-Bogota(config)#int f0/11
+S2-Bogota(config-if-range)#switchport mode access 
+S2-Bogota(config-if-range)#switchport access vlan 40
+S2-Bogota(config)#int f0/13
+S2-Bogota(config-if)#switchport mode access 
+S2-Bogota(config-if)#switchport access vlan 99
+S2-Bogota(config)#int f0/12
+S2-Bogota(config-if)#description Conectado a Bogota
+S2-Bogota(config-if)#switchport mode trunk 
+S2-Bogota(config-if)#switchport trunk allowed vlan 40,100,99
+S2-Bogota(config)#int vlan 99
+S2-Bogota(config-if)#ip add 192.168.40.3 255.255.255.240
+S2-Bogota(config-if)#no shutdown
+S2-Bogota(config)#ip default-gateway 192.168.10.33
+
+
+S2-Bogota(config)#int r f0/14-24
+S2-Bogota(config-if-range)#switchport mode access 
+S2-Bogota(config-if-range)#switchport access vlan 99
+S2-Bogota(config-if-range)#no shutdown 
+S2-Bogota(config)#int r g0/1-2
+S2-Bogota(config-if-range)#switchport mode access 
+S2-Bogota(config-if-range)#switchport access vlan 99
+S2-Bogota(config-if-range)#no shutdown 
+S2-Bogota(config)#line console 0
+S2-Bogota(config-line)#password cisco
+S2-Bogota(config-line)#login
+S2-Bogota(config-line)#exit
+S2-Bogota(config)#enable secret class
+S2-Bogota(config)#service password-encryption
+S2-Bogota(config)#no ip domain-name 
+S2-Bogota(config)#line vty 0 15
+S2-Bogota(config-line)#password cisco
+S2-Bogota(config-line)#login
+S2-Bogota(config-line)#exit
+S2-Bogota(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+
+S2-Bogota(config)#
+
+DMZ(config)#vlan 99
+DMZ(config-vlan)#name Administracion
+DMZ(config-vlan)#ex
+DMZ(config)#int f0/6
+DMZ(config-if)#switchport mode access 
+DMZ(config-if)#switchport access vlan 99
+DMZ(config)#int vlan 99
+DMZ(config-if)#ip add 192.168.30.3 255.255.255.240
+DMZ(config-if)#no shutdown 
+DMZ(config)#line console 0
+DMZ(config-line)#password cisco
+DMZ(config-line)#login
+DMZ(config-line)#exit
+DMZ(config)#enable secret class
+DMZ(config)#service password-encryption
+DMZ(config)#no ip domain-name 
+DMZ(config)#line vty 0 15
+DMZ(config-line)#password cisco
+DMZ(config-line)#login
+DMZ(config-line)#exit
+DMZ(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+
+DMZ(config)#
+
+Configuracion DHCP  BOGOTA
+
+Bogota(config)#ip dhcp pool VOZ
+Bogota(dhcp-config)#network 172.16.10.32 255.255.255.224
+Bogota(dhcp-config)#default-router 172.16.10.33
+Bogota(dhcp-config)#option 150 ip 172.16.10.33
+Bogota(dhcp-config)#exit
+
+Configuracion VOZIP
+ 
+max-dn 12
+max-ephones 12
+ip source-address 172.16.10.33 port 2000
+auto assign 1 to 12
+exit
+
+ephone-dn 1
+ number 3000
+
+ephone-dn 2
+ number 3001
+
+ephone-dn 3
+ number 3002
+
+ephone-dn 4
+ number 3003
+
+ephone-dn 5
+ number 3004
+
+ephone-dn 6
+ number 3005
+
+ephone-dn 7
+ number 3006
+
+ephone-dn 8
+ number 3007
+
+ephone-dn 9
+ number 3009
+
+ephone-dn 10
+ number 3010
+
+OSPF BOGOTA
+
+router ospf 1
+ router-id 2.2.2.2
+ passive-interface FastEthernet0/0
+ passive-interface FastEthernet0/1
+ network 192.168.10.128 0.0.0.7 area 0
+ network 192.168.10.32 0.0.0.31 area 0
+ network 172.16.10.32 0.0.0.31 area 0
+ network 200.100.0.0 0.0.0.3 area 0
+ network 200.100.0.12 0.0.0.3 area 0
+
+Configuracion SSH BOGOTA
+
+DMZ(config)#ip domain-name cisco.com
+DMZ(config)#crypto key generate rsa 
+The name for the keys will be: DMZ.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+DMZ(config)#ip ssh version 2
+DMZ(config)#line vty 0 15
+DMZ(config-line)#transport input ssh 
+DMZ(config-line)#login local
+DMZ(config-line)#exit
+DMZ(config)#username DMZ secret cisco
+
+Bogota(config)#ip domain-name cisco.com
+Bogota(config)#crypto key generate rsa 
+The name for the keys will be: Bogota.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+Bogota(config)#ip ssh version 2
+Bogota(config)#line vty 0 15
+Bogota(config-line)#transport input ssh 
+Bogota(config-line)#login local
+Bogota(config-line)#exit
+Bogota(config)#username Bogota secret cisco
+
+S2-Bogota(config)#ip domain-name cisco.com
+S2-Bogota(config)#crypto key generate rsa 
+The name for the keys will be: S2-Bogota.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+S2-Bogota(config)#ip ssh version 2
+
+S2-Bogota(config)#line vty 0 15
+S2-Bogota(config-line)#transport input ssh 
+S2-Bogota(config-line)#login local
+S2-Bogota(config-line)#exit
+S2-Bogota(config)#username S2-Bogota secret cisco
+
+Configuracion DIAL-PEER BOGOTA
+
+dial-peer voice 3000 voip
+ destination-pattern 2...
+ session target ipv4:172.16.10.1
+
+dial-peer voice 3001 voip
+ destination-pattern 4...
+ session target ipv4:172.16.10.65
+
+dial-peer voice 3002 voip
+ destination-pattern 5...
+ session target ipv4:172.16.10.97
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Configuracion del switch S3-Medellin
+
+S3-Medellin(config)#vlan 30
+S3-Medellin(config-vlan)#name Datos
+S3-Medellin(config-vlan)#vlan 100
+S3-Medellin(config-vlan)#name Voz
+S3-Medellin(config-vlan)#ex
+S3-Medellin(config)#vlan 99
+S3-Medellin(config-vlan)#name Administracion
+S3-Medellin(config-vlan)#exit
+
+S3-Medellin(config)#interface r f0/1-10
+S3-Medellin(config-if-range)#switchport mode access 
+S3-Medellin(config-if-range)#switchport access vlan 30
+S3-Medellin(config-if-range)#switchport voice vlan 100
+S3-Medellin(config)#interface f0/11
+S3-Medellin(config-if-range)#switchport mode access 
+S3-Medellin(config-if-range)#switchport access vlan 30
+S3-Medellin(config)#int f0/13
+S3-Medellin(config-if)#switchport mode access 
+S3-Medellin(config-if)#switchport access vlan 99
+
+S3-Medellin(config)#int r f0/14-24
+S3-Medellin(config-if-range)#switchport mode access 
+S3-Medellin(config-if-range)#switchport access vlan 99
+S3-Medellin(config-if-range)#no shutdown 
+S3-Medellin(config)#int r g0/1-2
+S3-Medellin(config-if-range)#switchport mode access 
+S3-Medellin(config-if-range)#switchport access vlan 99
+S3-Medellin(config-if-range)#no shutdown 
+S3-Medellin(config)#int f0/12
+S3-Medellin(config-if)#description Conectado a Medellin
+S3-Medellin(config-if)#switchport mode trunk 
+S3-Medellin(config-if)#switchport trunk allowed vlan 30,100,99
+
+S3-Medellin(config)#int vlan 99
+S3-Medellin(config-if)#ip add 192.168.50.3 255.255.255.240
+S3-Medellin(config-if)#no shutdown
+S3-Medellin(config)#ip default-gateway 192.168.10.65
+
+S3-Medellin(config)#line console 0
+S3-Medellin(config-line)#password cisco
+S3-Medellin(config-line)#login
+S3-Medellin(config-line)#exit
+S3-Medellin(config)#enable secret class
+S3-Medellin(config)#service password-encryption
+S3-Medellin(config)#no ip domain-name 
+S3-Medellin(config)#line vty 0 15
+S3-Medellin(config-line)#password cisco
+S3-Medellin(config-line)#login
+S3-Medellin(config-line)#exit
+S3-Medellin(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+
+S3-Medellin(config)#
+
+Configuracion del Router Medellin
+
+Medellin(config)#int f0/0.30
+Medellin(config-subif)#description Conectado a S3-Medellin
+Medellin(config-subif)#encapsulation dot1Q 30
+Medellin(config-subif)#ip add 192.168.10.65 255.255.255.224
+Medellin(config-subif)#exit
+Medellin(config)#int f0/0.100
+Medellin(config-subif)#description Conectado a S3-Medellin
+Medellin(config-subif)#encapsulation dot1Q 100
+Medellin(config-subif)#ip add 172.16.10.65 255.255.255.224
+Medellin(config-subif)#exit
+Medellin(config)#int f0/0.99
+Medellin(config-subif)#description Conectado a S3-Medellin
+Medellin(config-subif)#encapsulation dot1Q 99
+Medellin(config-subif)#ip add 192.168.50.1 255.255.255.240
+
+Medellin(config)#int f0/0
+Medellin(config-if)#no shutdown
+
+interface Serial0/3/0
+ description Conectado a Bogota
+ ip address 200.100.0.13 255.255.255.252
+
+interface Serial0/3/1
+ description Conectado a  Cali
+ ip address 200.100.0.10 255.255.255.252
+
+Configuracion DHCP MEDELLIN
+
+Medellin(config)#ip dhcp pool VOZ
+Medellin(dhcp-config)#network 172.16.10.64 255.255.255.224
+Medellin(dhcp-config)#default-router 172.16.10.65
+Medellin(dhcp-config)#option 150 ip 172.16.10.65
+Medellin(dhcp-config)#exIT
+Medellin(config)#ip dhcp excluded-address 172.16.10.65
+
+line console 0
+password cisco
+login
+exit
+enable secret class
+service password-encryption
+no ip domain-lookup
+line vty 0 15
+password cisco
+login
+exit
+banner motd %
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+%
+
+Configuracion VOZIP
+
+telephony-service
+ max-ephones 12
+ max-dn 12
+ ip source-address 172.16.10.65 port 2000
+ auto assign 1 to 12
+
+ephone-dn 1
+ number 4000
+
+ephone-dn 2
+ number 4001
+
+ephone-dn 3
+ number 4002
+
+ephone-dn 4
+ number 4004
+
+ephone-dn 5
+ number 4005
+
+ephone-dn 6
+ number 4006
+
+ephone-dn 7
+ number 4007
+
+ephone-dn 8
+ number 4008
+
+ephone-dn 9
+ number 4009
+
+ephone-dn 10
+ number 4010
+
+OSPF MEDELLIN 
+
+router ospf 1
+ router-id 3.3.3.3
+ passive-interface FastEthernet0/0
+ network 192.168.10.64 0.0.0.31 area 0
+ network 172.16.10.64 0.0.0.31 area 0
+ network 200.100.0.12 0.0.0.3 area 0
+ network 200.100.0.8 0.0.0.3 area 0
+
+Configuracion SSH MEDELLIN
+
+Medellin(config)#ip domain-name cisco.com
+Medellin(config)#crypto key generate rsa 
+The name for the keys will be: Medellin.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+Medellin(config)#ip ssh version 2
+Medellin(config)#line vty 0 15
+Medellin(config-line)#transport input ssh 
+Medellin(config-line)#login local
+Medellin(config-line)#exit
+Medellin(config)#username Medellin secret cisco
+
+S3-Medellin(config)#ip domain-name cisco.com
+S3-Medellin(config)#crypto key generate rsa
+The name for the keys will be: S3-Medellin.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+S3-Medellin(config)#ip ssh version 2
+S3-Medellin(config)#line vty 0 15
+S3-Medellin(config-line)#transport input ssh
+S3-Medellin(config-line)#login local
+S3-Medellin(config-line)#exit
+S3-Medellin(config)#username S3-Medellin secret cisco
+
+Configuracion DIAL-PEER MEDELLIN
+
+dial-peer voice 4000 voip
+ destination-pattern 2...
+ session target ipv4:172.16.10.1
+
+dial-peer voice 4001 voip
+ destination-pattern 3...
+ session target ipv4:172.16.10.33
+
+dial-peer voice 4002 voip
+ destination-pattern 5...
+ session target ipv4:172.16.10.97
+
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Configuracion del switch S4-Cali
+
+S4-Cali(config)#vlan 30
+S4-Cali(config-vlan)#name Datos
+S4-Cali(config-vlan)#vlan 100
+S4-Cali(config-vlan)#name Voz
+S4-Cali(config-vlan)#ex
+S4-Cali(config)#vlan 99
+S4-Cali(config-vlan)#name Administracion
+S4-Cali(config-vlan)#exit
+
+S4-Cali(config)#int r f0/1-10
+S4-Cali(config-if-range)#switchport mode access 
+S4-Cali(config-if-range)#switchport access vlan 30
+S4-Cali(config-if-range)#switchport voice vlan 100
+S4-Cali(config)#int r f0/11
+S4-Cali(config-if-range)#switchport mode access 
+S4-Cali(config-if-range)#switchport access vlan 30
+S4-Cali(config)#int f0/13
+S4-Cali(config-if)#switchport mode a
+S4-Cali(config-if)#switchport mode access 
+S4-Cali(config-if)#switchport access vlan 99
+S4-Cali(config)#int f0/12
+S4-Cali(config-if)#description Conectado a Cali
+S4-Cali(config-if)#switchport mode trunk 
+S4-Cali(config-if)#switchport trunk allowed vlan 30,100,99
+S4-Cali(config)#int r f0/14-24
+S4-Cali(config-if-range)#switchport mode access 
+S4-Cali(config-if-range)#switchport access vlan 99
+S4-Cali(config-if-range)#no shutdown 
+S4-Cali(config-if-range)#exit
+S4-Cali(config)#int r g0/1-2
+S4-Cali(config-if-range)#switchport mode access 
+S4-Cali(config-if-range)#switchport access vlan 99
+S4-Cali(config-if-range)#no shutdown 
+S4-Cali(config)#int vlan 99
+S4-Cali(config-if)#ip add 192.168.60.3 255.255.255.240
+S4-Cali(config-if)#no shutdown
+S4-Cali(config)#ip default-gateway 192.168.10.97
+
+S4-Cali(config)#line console 0
+S4-Cali(config-line)#password cisco
+S4-Cali(config-line)#login
+S4-Cali(config-line)#exit
+S4-Cali(config)#enable secret class
+S4-Cali(config)#service password-encryption
+S4-Cali(config)#no ip domain-name 
+S4-Cali(config)#line vty 0 15
+S4-Cali(config-line)#password cisco
+S4-Cali(config-line)#login
+S4-Cali(config-line)#exit
+S4-Cali(config)#banner motd #
+Enter TEXT message.  End with the character '#'.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            
+           NO ENTRAR SIN AUTORIZACION
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+
+S4-Cali(config)#
+
+
+Configuracion del Router Cali
+
+Cali(config)#int f0/0.30
+description Conectado S4-Cali
+Cali(config-subif)#encapsulation dot1Q 30
+Cali(config-subif)#ip add 192.168.10.97 255.255.255.224
+Cali(config-subif)#ex
+Cali(config)#int f0/0.100
+description Conectado S4-Cali
+Cali(config-subif)#encapsulation dot1Q 100
+Cali(config-subif)#ip add 172.16.10.97 255.255.255.224
+Cali(config-subif)#ex
+Cali(config)#int f0/0.99
+Cali(config-subif)#encapsulation dot1Q 99
+Cali(config-subif)#ip add 192.168.60.1 255.255.255.240
+Cali(config)#int f0/0
+Cali(config-if)#no shutdown 
+
+interface Serial0/3/0
+ description Conectado a Sincelejo
+ ip address 200.100.0.6 255.255.255.252
+
+interface Serial0/3/1
+ description Conectado a Cali
+ ip address 200.100.0.9 255.255.255.252
+ clock rate 2000000
+
+Configuracion DHCP CALI
+
+Cali(config)#ip dhcp pool VOZ
+Cali(dhcp-config)#network 172.16.10.96 255.255.255.224
+Cali(dhcp-config)#default-router 172.16.10.97
+Cali(dhcp-config)#option 150 ip 172.16.10.97
+
+Configuracion VOZIP
+
+telephony-service
+ max-ephones 12
+ max-dn 12
+ ip source-address 172.16.10.97 port 2000
+ auto assign 1 to 12
+
+
+OSPF CALI
+
+router ospf 1
+ router-id 4.4.4.4
+ passive-interface FastEthernet0/0
+ network 192.168.10.96 0.0.0.31 area 0
+ network 172.16.10.96 0.0.0.31 area 0
+ network 200.100.0.4 0.0.0.3 area 0
+ network 200.100.0.8 0.0.0.3 area 0
+
+Configuracion SSH CALI
+
+Cali(config)#ip domain-name cisco.com
+Cali(config)#crypto key generate rsa
+The name for the keys will be: Cali.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+
+Cali(config)#ip ssh version 2
+Cali(config)#line vty 0 15
+Cali(config-line)#transport input ssh
+Cali(config-line)#login local
+Cali(config-line)#exit
+Cali(config)#username Cali secret cisco
+
+
+S4-Cali(config)#ip domain-name cisco.com
+S4-Cali(config)#crypto key generate rsa 
+The name for the keys will be: S4-Cali.cisco.com
+Choose the size of the key modulus in the range of 360 to 4096 for your
+  General Purpose Keys. Choosing a key modulus greater than 512 may take
+  a few minutes.
+
+How many bits in the modulus [512]: 1024
+S4-Cali(config)#line vty 0 15
+S4-Cali(config-line)#transport input ssh 
+S4-Cali(config-line)#login local
+S4-Cali(config-line)#exit
+S4-Cali(config)#username S4-Cali secret cisco
+
+Configuracion DIAL-PEER CALI
+
+dial-peer voice 5000 voip
+ destination-pattern 2...
+ session target ipv4:172.16.10.1
+
+dial-peer voice 5001 voip
+ destination-pattern 3...
+ session target ipv4:172.16.10.33
+
+dial-peer voice 5002 voip
+ destination-pattern 4...
+ session target ipv4:172.16.10.65
+
+
