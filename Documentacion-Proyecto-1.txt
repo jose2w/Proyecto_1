@@ -1,4 +1,4 @@
-Configuraciond del switch S1_Sincelejo
+Configuracion del switch S1_Sincelejo
 
 Switch(config)#hostname S1_Sincelejo
 S1_Sincelejo(config)#vlan 10
@@ -438,7 +438,7 @@ ephone-dn 9
 ephone-dn 10
  number 3010
 
-OSPF BOGOTA
+Configuracion del protocolo OSPF BOGOTA
 
 router ospf 1
  router-id 2.2.2.2
@@ -672,7 +672,7 @@ ephone-dn 9
 ephone-dn 10
  number 4010
 
-OSPF MEDELLIN 
+Configuracion del protocolo OSPF MEDELLIN 
 
 router ospf 1
  router-id 3.3.3.3
@@ -838,7 +838,7 @@ telephony-service
  auto assign 1 to 12
 
 
-OSPF CALI
+Configuracion del protocolo OSPF CALI
 
 router ospf 1
  router-id 4.4.4.4
